@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden bg-transparent">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col hidden md:flex z-20 shadow-sm">
+        <div class="h-16 flex items-center px-6 border-b border-gray-100">
+            <i class="fas fa-piggy-bank text-pocketwise-darkGreen text-2xl mr-3"></i>
+            <span class="text-xl font-extrabold text-gray-800 tracking-tight font-heading">PocketWise</span>
+        </div>
+        <div class="flex-1 overflow-y-auto py-6">
+            <nav class="space-y-1.5 px-3">
+                <a href="/"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-border-all w-6 text-center mr-2"></i> Dashboard
+                </a>
+                <a href="/transactions"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-exchange-alt w-6 text-center mr-2"></i> Transactions
+                </a>
+                <a href="/investments"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-chart-pie w-6 text-center mr-2"></i> Investments
+                </a>
+                <a href="/analytics"
+                    class="nav-link active flex items-center px-3 py-3 text-sm font-semibold rounded-xl text-pocketwise-darkGreen bg-pocketwise-mint shadow-sm">
+                    <i class="fas fa-chart-line w-6 text-center mr-2"></i> Analytics
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-gray-100">
+            <button onclick="logout()"
+                class="flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl text-red-600 hover:bg-red-50 transition-colors">
+                <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header
+            class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 z-10">
+            <div>
+                <h1 class="text-xl font-bold font-heading text-gray-800">Financial Forecasting</h1>
+            </div>
+            <div class="flex items-center space-x-5">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="h-9 w-9 rounded-full bg-pocketwise-darkGreen text-white flex items-center justify-center font-bold shadow-sm">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <span class="text-sm font-bold text-gray-700 hidden sm:block">{{ current_user.name if current_user
+                        else 'User' }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+            <!-- Financial Forecasting Section -->
+            <div id="forecastingSection" class="hidden animate-fade-in" style="animation-delay: 200ms;">
+
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <!-- Monthly Forecast Card -->
+                    <div id="monthlyForecastCard"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden relative overflow-hidden group hover:shadow-md transition-shadow">
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50">
+                        </div>
+                        <h3
+                            class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center z-10 relative">
+                            <i class="fas fa-calendar-alt text-blue-500 mr-2"></i> Monthly Forecast
+                        </h3>
+                        <div class="space-y-4 relative z-10">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 font-medium">Expected Income</span>
+                                <span class="text-sm font-bold text-green-600" id="forecastIncome"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 font-medium">Expected Expense</span>
+                                <span class="text-sm font-bold text-red-600" id="forecastExpense"></span>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-sm text-gray-800 font-bold">Expected Savings</span>
+                                <span class="text-base font-extrabold text-pocketwise-darkGreen"
+                                    id="forecastSavings"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Balance Projection Card -->
+                    <div id="balanceProjectionCard"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden relative overflow-hidden group hover:shadow-md transition-shadow">
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-50 to-transparent rounded-bl-full opacity-50">
+                        </div>
+                        <h3
+                            class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center z-10 relative">
+                            <i class="fas fa-wallet text-purple-500 mr-2"></i> Balance Projection
+                        </h3>
+                        <div class="space-y-4 relative z-10">
+                            <div>
+                                <span class="block text-xs text-gray-500 mb-1 font-medium">Estimated Days
+                                    Remaining</span>
+                                <div class="text-3xl font-extrabold text-gray-900 tracking-tight" id="forecastDays">
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-500 font-medium">Current Balance</span>
+                                    <span class="text-xs font-bold text-gray-700" id="forecastCurrentBalance"></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-500 font-medium">Avg Daily Expense</span>
+                                    <span class="text-xs font-bold text-gray-700" id="forecastDailyExpense"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Projection Card -->
+                    <div id="investmentProjectionCard"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden relative overflow-hidden group hover:shadow-md transition-shadow">
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-50 to-transparent rounded-bl-full opacity-50">
+                        </div>
+                        <h3
+                            class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center z-10 relative">
+                            <i class="fas fa-chart-line text-yellow-500 mr-2"></i> Investment Projection
+                        </h3>
+                        <div class="space-y-4 relative z-10">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 font-medium">6 Months</span>
+                                <span class="text-sm font-bold text-gray-900" id="forecast6m"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 font-medium">12 Months</span>
+                                <span class="text-sm font-bold text-gray-900" id="forecast12m"></span>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-sm text-gray-800 font-bold">Average Return</span>
+                                <span class="text-sm font-extrabold text-pocketwise-darkGreen"
+                                    id="forecastReturn"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Not Enough Data States -->
+                    <div id="monthlyDataBlocker"
+                        class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hidden flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-calendar-times text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-sm text-gray-500 font-medium">Not enough data for forecasting yet</p>
+                    </div>
+                    <div id="balanceDataBlocker"
+                        class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hidden flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-wallet text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-sm text-gray-500 font-medium">Not enough data for forecasting yet</p>
+                    </div>
+                    <div id="investmentDataBlocker"
+                        class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hidden flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-chart-line text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-sm text-gray-500 font-medium">Not enough data for forecasting yet</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <!-- Income Expense Forecast Chart -->
+                    <div id="trendChartContainer"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden hover:shadow-md transition-shadow">
+                        <h3 class="text-sm font-bold text-gray-800 mb-4">Income and Expense Forecast</h3>
+                        <div class="relative h-48 w-full">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Balance Projection Chart -->
+                    <div id="balanceChartContainer"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden hover:shadow-md transition-shadow">
+                        <h3 class="text-sm font-bold text-gray-800 mb-4">Balance Projection</h3>
+                        <div class="relative h-48 w-full">
+                            <canvas id="balanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Forecast Chart -->
+                    <div id="investmentChartContainer"
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hidden hover:shadow-md transition-shadow">
+                        <h3 class="text-sm font-bold text-gray-800 mb-4">Portfolio Forecast</h3>
+                        <div class="relative h-48 w-full">
+                            <canvas id="investmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

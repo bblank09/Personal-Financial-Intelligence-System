@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden bg-transparent">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col hidden md:flex z-20 shadow-sm">
+        <div class="h-16 flex items-center px-6 border-b border-gray-100">
+            <i class="fas fa-piggy-bank text-pocketwise-darkGreen text-2xl mr-3"></i>
+            <span class="text-xl font-extrabold text-gray-800 tracking-tight font-heading">PocketWise</span>
+        </div>
+        <div class="flex-1 overflow-y-auto py-6">
+            <nav class="space-y-1.5 px-3">
+                <a href="/"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-border-all w-6 text-center mr-2"></i> Dashboard
+                </a>
+                <a href="/transactions"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-exchange-alt w-6 text-center mr-2"></i> Transactions
+                </a>
+                <a href="/investments"
+                    class="nav-link active flex items-center px-3 py-3 text-sm font-semibold rounded-xl text-pocketwise-darkGreen bg-pocketwise-mint shadow-sm">
+                    <i class="fas fa-chart-pie w-6 text-center mr-2"></i> Investments
+                </a>
+                <a href="/analytics"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-chart-line w-6 text-center mr-2"></i> Analytics
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-gray-100">
+            <button onclick="logout()"
+                class="flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl text-red-600 hover:bg-red-50 transition-colors">
+                <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <!-- Topbar -->
+        <header
+            class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 z-10">
+            <div class="flex items-center md:hidden">
+                <i class="fas fa-bars text-gray-500 text-xl cursor-pointer"></i>
+                <span class="ml-4 text-xl font-extrabold text-gray-800 tracking-tight font-heading">PocketWise</span>
+            </div>
+            <div class="hidden md:flex flex-1">
+                <h1 class="text-xl font-bold font-heading text-gray-800">Investments</h1>
+            </div>
+            <div class="flex items-center space-x-5">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="h-9 w-9 rounded-full bg-pocketwise-darkGreen text-white flex items-center justify-center font-bold shadow-sm">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <span class="text-sm font-bold text-gray-700 hidden sm:block">{{ current_user.name if current_user
+                        else 'User' }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+            <div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <div class="flex items-center justify-between mb-4 relative z-10">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">Total
+                                Investment</h3>
+                            <div
+                                class="w-10 h-10 rounded-full bg-pocketwise-mint flex items-center justify-center text-pocketwise-darkGreen">
+                                <i class="fas fa-wallet text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="relative z-10">
+                            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight" id="totalInvestmentCard">
+                                $0.00</h2>
+                            <p class="text-sm font-medium text-gray-500 mt-1">Sum of all invested amounts</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <div class="flex items-center justify-between mb-4 relative z-10">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">Current
+                                Portfolio Value</h3>
+                            <div
+                                class="w-10 h-10 rounded-full bg-pocketwise-mint flex items-center justify-center text-pocketwise-darkGreen">
+                                <i class="fas fa-chart-line text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="relative z-10">
+                            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight" id="portfolioValueCard">
+                                $0.00</h2>
+                            <p class="text-sm font-medium text-gray-500 mt-1">Sum of current values</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <div class="flex items-center justify-between mb-4 relative z-10">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">Profit /
+                                Loss</h3>
+                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400"
+                                id="profitIconContainer">
+                                <i class="fas fa-percentage text-lg" id="profitIcon"></i>
+                            </div>
+                        </div>
+                        <div class="relative z-10">
+                            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight" id="profitCard">$0.00
+                                (+0.0%)</h2>
+                            <p class="text-sm font-medium text-gray-500 mt-1">Portfolio Value - Investment Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 flex flex-col items-center">
+                        <h3
+                            class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading mb-4 w-full text-left">
+                            Portfolio Allocation</h3>
+                        <div class="w-full max-w-xs relative flex justify-center" style="height: 250px;">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 flex flex-col items-center">
+                        <h3
+                            class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading mb-4 w-full text-left">
+                            Monthly Performance</h3>
+                        <div class="w-full relative flex justify-center" style="height: 250px;">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div
+                    class="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-5 rounded-2xl soft-shadow border border-gray-50">
+                    <h2 class="text-xl font-bold font-heading text-gray-800">Your Portfolio</h2>
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <button onclick="syncLivePrices()" id="syncPricesBtn"
+                            class="flex-1 md:flex-none justify-center bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-pocketwise-mint transition-all shadow-sm flex items-center">
+                            <i class="fas fa-sync-alt mr-2"></i> Sync Live Prices
+                        </button>
+                        <button onclick="openInvestmentModal()"
+                            class="flex-1 md:flex-none justify-center bg-pocketwise-darkGreen text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-teal-800 focus:ring-2 focus:ring-offset-2 focus:ring-pocketwise-darkGreen transition-all shadow-md flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Add Investment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Portfolio Table -->
+                <div class="bg-white rounded-2xl soft-shadow border border-gray-50 overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-gray-50 bg-gray-50 flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-gray-800 font-heading">Grouped Portfolio</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Symbol</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Asset Name</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Total Qty</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Avg Price</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Current Price</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Total Profit</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Return %</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-50" id="portfolioTableBody">
+                                <!-- Portfolio rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transaction History Table -->
+                <div class="bg-white rounded-2xl soft-shadow border border-gray-50 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-50 bg-gray-50 flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-gray-800 font-heading">Transaction History</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Symbol</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Asset Name</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Qty</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Purchase Price</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Purchase Date</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-50" id="investmentTableBody">
+                                <!-- Transaction rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal -->
+<div id="investmentModal"
+    class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 soft-shadow transform scale-95 transition-transform duration-300"
+        id="invModalContent">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 font-heading" id="invModalTitle">Add Investment</h2>
+            <button onclick="closeInvestmentModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <form id="invForm" class="space-y-5">
+            <input type="hidden" id="invId">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5" for="invSymbol">Symbol</label>
+                    <input type="text" id="invSymbol" required placeholder="e.g. AAPL" readonly
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-100 text-gray-500 focus:outline-none cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5" for="invName">Asset Name
+                        (Search)</label>
+                    <div class="relative">
+                        <input type="text" id="invName" required placeholder="Search symbol e.g. AAPL..."
+                            autocomplete="off"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pocketwise-mint focus:border-pocketwise-darkGreen bg-gray-50 focus:bg-white transition-all">
+                        <!-- Dropdown Results -->
+                        <div id="searchResults"
+                            class="absolute z-50 w-full bg-white mt-1 border border-gray-100 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5" for="invQuantity">Quantity</label>
+                    <input type="number" step="any" id="invQuantity" placeholder="e.g. 10" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pocketwise-mint focus:border-pocketwise-darkGreen bg-gray-50 focus:bg-white transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5" for="invPrice">Purchase Price</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-400 font-medium">$</span>
+                        </div>
+                        <input type="number" step="any" id="invPrice" placeholder="0.00" required
+                            class="w-full border border-gray-200 rounded-xl pl-7 pr-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pocketwise-mint focus:border-pocketwise-darkGreen bg-gray-50 focus:bg-white transition-all">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1.5" for="invDate">Purchase Date</label>
+                <input type="date" id="invDate" required
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pocketwise-mint focus:border-pocketwise-darkGreen bg-gray-50 focus:bg-white transition-all cursor-pointer">
+            </div>
+            <div class="pt-2 flex space-x-3">
+                <button type="button" onclick="closeInvestmentModal()"
+                    class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-pocketwise-darkGreen text-white px-4 py-3 rounded-xl text-sm font-bold hover:bg-teal-800 transition-colors shadow-md transform hover:-translate-y-0.5"
+                    id="invSaveBtn">
+                    Save Investment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/investments.js"></script>
+{% endblock %}

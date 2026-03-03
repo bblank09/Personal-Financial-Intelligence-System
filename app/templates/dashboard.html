@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col hidden md:flex z-20 shadow-sm">
+        <div class="h-16 flex items-center px-6 border-b border-gray-100">
+            <i class="fas fa-piggy-bank text-pocketwise-darkGreen text-2xl mr-3"></i>
+            <span class="text-xl font-extrabold text-gray-800 tracking-tight font-heading">PocketWise</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-6">
+            <nav class="space-y-1.5 px-3">
+                <a href="/"
+                    class="nav-link active flex items-center px-3 py-3 text-sm font-semibold rounded-xl text-pocketwise-darkGreen bg-pocketwise-mint shadow-sm">
+                    <i class="fas fa-border-all w-6 text-center mr-2"></i> Dashboard
+                </a>
+                <a href="/transactions"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-exchange-alt w-6 text-center mr-2"></i> Transactions
+                </a>
+                <a href="/investments"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-chart-pie w-6 text-center mr-2"></i> Investments
+                </a>
+                <a href="/analytics"
+                    class="nav-link flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <i class="fas fa-chart-line w-6 text-center mr-2"></i> Analytics
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-gray-100">
+            <button onclick="logout()"
+                class="flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl text-red-600 hover:bg-red-50 transition-colors">
+                <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-transparent relative">
+        <!-- Top Navbar -->
+        <header
+            class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 z-10">
+            <div class="flex items-center md:hidden">
+                <!-- Mobile menu button placeholder -->
+                <i class="fas fa-bars text-gray-500 text-xl cursor-pointer"></i>
+                <span class="ml-4 text-xl font-extrabold text-gray-800 tracking-tight font-heading">PocketWise</span>
+            </div>
+
+            <div class="hidden md:flex flex-1 items-center space-x-4">
+                <h1 class="text-xl font-bold font-heading text-gray-800">Financial Insights</h1>
+            </div>
+
+            <div class="flex items-center space-x-3 md:space-x-5">
+                <input type="month" id="dashboard-month-filter"
+                    class="px-2 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:border-pocketwise-darkGreen transition-colors" />
+
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="h-9 w-9 rounded-full bg-pocketwise-darkGreen text-white flex items-center justify-center font-bold shadow-sm">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <span class="text-sm font-bold text-gray-700 hidden sm:block">{{ current_user.name if current_user
+                        else 'User' }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 transition-all duration-300">
+            <div class="max-w-7xl mx-auto space-y-8 animate-fade-in">
+
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Income -->
+                    <div
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Income</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1" id="dash-income">...</h3>
+                            </div>
+                            <div class="p-2.5 bg-green-50 rounded-xl">
+                                <i class="fas fa-arrow-up text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Expense -->
+                    <div
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Expenses</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1" id="dash-expense">...</h3>
+                            </div>
+                            <div class="p-2.5 bg-red-50 rounded-xl">
+                                <i class="fas fa-arrow-down text-red-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saving Rate -->
+                    <div
+                        class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50 hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Saving Rate</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1" id="dash-saving-rate">...</h3>
+                            </div>
+                            <div class="p-2.5 bg-pocketwise-mint rounded-xl">
+                                <i class="fas fa-piggy-bank text-pocketwise-darkGreen"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Health Score -->
+                    <div
+                        class="bg-gradient-to-br from-pocketwise-darkGreen to-teal-900 rounded-2xl p-6 soft-shadow relative overflow-hidden hover:-translate-y-1 transition-transform duration-300">
+                        <div class="absolute right-0 bottom-0 opacity-10">
+                            <i class="fas fa-heartbeat text-8xl text-white mr-[-10px] mb-[-10px]"></i>
+                        </div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div>
+                                <p class="text-sm font-medium text-teal-100">Health Score</p>
+                                <h3 class="text-3xl font-extrabold text-white mt-1 font-heading" id="dash-health-score">
+                                    ...<span class="text-lg font-medium text-teal-200">/100</span></h3>
+                            </div>
+                        </div>
+                        <div class="mt-4 relative z-10 w-full bg-teal-950/50 rounded-full h-2">
+                            <div id="dash-score-bar"
+                                class="bg-pocketwise-mint h-2 rounded-full shadow-[0_0_10px_rgba(207,232,213,0.5)] transition-all duration-1000"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Overview -->
+                <div class="mt-8 space-y-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div
+                            class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                            <div
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                            <div class="flex items-center justify-between mb-4 relative z-10">
+                                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">Total
+                                    Investment</h3>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-pocketwise-mint flex items-center justify-center text-pocketwise-darkGreen">
+                                    <i class="fas fa-wallet text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="relative z-10">
+                                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight"
+                                    id="dashTotalInvestment">$0.00</h2>
+                                <p class="text-sm font-medium text-gray-500 mt-1">Total amount invested</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                            <div
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                            <div class="flex items-center justify-between mb-4 relative z-10">
+                                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">
+                                    Portfolio Value</h3>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-pocketwise-mint flex items-center justify-center text-pocketwise-darkGreen">
+                                    <i class="fas fa-chart-line text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="relative z-10">
+                                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight"
+                                    id="dashPortfolioValue">$0.00</h2>
+                                <p class="text-sm font-medium text-gray-500 mt-1">Current portfolio value</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white p-6 rounded-2xl soft-shadow border border-gray-50 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                            <div
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-gray-50 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                            <div class="flex items-center justify-between mb-4 relative z-10">
+                                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider font-heading">Profit
+                                    / Loss</h3>
+                                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400"
+                                    id="dashProfitIconContainer">
+                                    <i class="fas fa-percentage text-lg" id="dashProfitIcon"></i>
+                                </div>
+                            </div>
+                            <div class="relative z-10">
+                                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight" id="dashProfit">$0.00
+                                    (+0.0%)</h2>
+                                <p class="text-sm font-medium text-gray-500 mt-1">Portfolio return</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Line Chart: Trend -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl p-6 soft-shadow border border-gray-50">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold font-heading text-gray-800">Cash Flow Trend</h3>
+
+                        </div>
+                        <div class="h-72">
+                            <canvas id="cashflowChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart: Expense Breakdown -->
+                    <div class="bg-white rounded-2xl p-6 soft-shadow border border-gray-50">
+                        <h3 class="text-lg font-bold font-heading text-gray-800 mb-6">Expense Breakdown</h3>
+                        <div class="h-56 flex justify-center">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                        <div class="mt-6 text-center p-3 bg-gray-50 rounded-xl">
+                            <p class="text-sm text-gray-500">Top Category</p>
+                            <p class="font-bold text-gray-800 mt-1" id="dash-top-category">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Recommendations -->
+                <div class="bg-white rounded-2xl p-6 md:p-8 soft-shadow border border-gray-50">
+                    <h3 class="text-lg font-bold font-heading text-gray-800 mb-6 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center mr-3">
+                            <i class="fas fa-lightbulb text-yellow-500"></i>
+                        </div>
+                        Smart Insights
+                    </h3>
+                    <div id="dash-recommendations" class="space-y-4">
+                        <div class="animate-pulse flex space-x-4 p-4 border border-gray-100 rounded-xl">
+                            <div class="flex-1 space-y-4 py-1">
+                                <div class="h-2.5 bg-gray-200 rounded w-3/4"></div>
+                                <div class="h-2.5 bg-gray-200 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                        <div class="animate-pulse flex space-x-4 p-4 border border-gray-100 rounded-xl">
+                            <div class="flex-1 space-y-4 py-1">
+                                <div class="h-2.5 bg-gray-200 rounded w-2/3"></div>
+                                <div class="h-2.5 bg-gray-200 rounded w-4/5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

@@ -1,0 +1,4 @@
+from app.services.auth_service import AuthService
+from app.services.financial_service import FinancialService
+from app.services.recommendation_service import RecommendationService
+from app.services.analytics_service import AnalyticsService
