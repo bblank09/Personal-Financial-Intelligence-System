@@ -1,5 +1,16 @@
 # Personal Financial Intelligence System for University Students
 
+## Project Information
+**Course:** 01204351 Databases Systems
+**Semester:** 2/2025  
+**Instructor:** Dr. Piya Limcharoen
+
+## Team Members
+- 6710503704 Korranis Pitichaichan – Analytics + MongoDB + Frontend
+- 6710503828 Jadesita Sangsirikrailert– Authentication + Core Backend
+- 6710503933 Nuttaya Sriwongsa – Transactions + Investments (MySQL Logic)
+- 6710504425 Supachok Julaupay - Frontend + Overview
+
 A production-grade financial web application for university students to track income and expenses, manage investments, and monitor financial health via AI-driven recommendations. Built with Python Flask, MySQL, MongoDB, and Tailwind CSS.
 
 ## Features
