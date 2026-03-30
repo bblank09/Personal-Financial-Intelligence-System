@@ -25,5 +25,5 @@ jobs:
 
       - name: Run Pytest
         env:
-          SQLALCHEMY_DATABASE_URI: sqlite:///:memory:
+          SQLALCHEMY_DATABASE_URI: 'sqlite:///:memory:'
         run: pytest tests/ -v
