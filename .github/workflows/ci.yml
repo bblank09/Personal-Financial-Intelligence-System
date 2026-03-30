@@ -1,5 +1,8 @@
 name: CI - Run Tests
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches: [main]
@@ -26,4 +29,4 @@ jobs:
       - name: Run Pytest
         env:
           SQLALCHEMY_DATABASE_URI: 'sqlite:///:memory:'
-        run: pytest tests/ -v
+        run: python -m pytest tests/ -v
