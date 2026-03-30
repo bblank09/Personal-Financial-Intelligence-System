@@ -8,7 +8,7 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
     MONGO_URI = 'mongodb://mongo:27017/test_finance_db'
-
+#1
 @pytest.fixture
 def app():
     app = create_app(TestConfig)
