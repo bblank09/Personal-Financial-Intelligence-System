@@ -109,3 +109,31 @@ def test_get_asset_price(client):
     assert data['ticker'] == 'AAPL'
     assert 'current_price' in data
     assert 'historical_price' in data
+
+
+def test_add_investment_without_login(client):
+    response = client.post('/api/investments',
+        data=json.dumps({"symbol": "AAPL", "asset_name": "Apple Inc.", "quantity": 10.0, "price": 150.0, "purchase_date": "2024-05-01"}),
+        content_type='application/json'
+    )
+    assert response.status_code == 401
+
+
+def test_delete_nonexistent_investment(client):
+    client.post('/api/register', data=json.dumps({"username": "invuser8", "email": "inv8@example.com", "password": "pwd"}), content_type='application/json')
+    client.post('/api/login', data=json.dumps({"email": "inv8@example.com", "password": "pwd"}), content_type='application/json')
+
+    response = client.delete('/api/investments/99999')
+    assert response.status_code == 404
+    assert b"Investment not found" in response.data
+
+
+def test_get_summary_empty(client):
+    client.post('/api/register', data=json.dumps({"username": "invuser9", "email": "inv9@example.com", "password": "pwd"}), content_type='application/json')
+    client.post('/api/login', data=json.dumps({"email": "inv9@example.com", "password": "pwd"}), content_type='application/json')
+
+    response = client.get('/api/investments/summary')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'assets' in data
+    assert len(data['assets']) == 0

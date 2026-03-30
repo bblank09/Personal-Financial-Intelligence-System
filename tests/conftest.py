@@ -27,14 +27,22 @@ import unittest.mock as mock
 
 @pytest.fixture(autouse=True)
 def mock_mongo():
-    import app.mongo.investment_summary_mongo
-    import app.mongo.financial_summary
-    import app.mongo.forecast_mongo
-    with mock.patch("app.mongo.investment_summary_mongo.InvestmentSummaryMongo") as mock_invest, \
-         mock.patch("app.mongo.forecast_mongo.ForecastMongo") as mock_forecast, \
-         mock.patch("app.mongo.financial_summary.FinancialSummaryMongo") as mock_fin:
-        
-        mock_invest.get_historical_summaries.return_value = []
+    # Mock get_collection in every module that imports it
+    mock_collection = mock.MagicMock()
+    mock_collection.find_one.return_value = None
+    mock_collection.update_one.return_value = None
+    mock_collection.insert_one.return_value = None
+
+    # Create a chainable cursor mock for .find().sort().limit()
+    mock_cursor = mock.MagicMock()
+    mock_cursor.sort.return_value = mock_cursor
+    mock_cursor.limit.return_value = mock_cursor
+    mock_cursor.__iter__ = mock.Mock(return_value=iter([]))
+    mock_collection.find.return_value = mock_cursor
+
+    with mock.patch("app.mongo.financial_summary.get_collection", return_value=mock_collection), \
+         mock.patch("app.mongo.investment_summary_mongo.get_collection", return_value=mock_collection), \
+         mock.patch("app.mongo.forecast_mongo.get_collection", return_value=mock_collection):
         yield
 
 @pytest.fixture(autouse=True)

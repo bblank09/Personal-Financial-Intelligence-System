@@ -81,3 +81,30 @@ def test_update_transaction(client):
     assert updated_tx['amount'] == 120.0
     assert updated_tx['category'] == 'Dining Out'
     assert updated_tx['date'] == '2024-05-03'
+
+
+def test_add_transaction_without_login(client):
+    response = client.post('/api/transactions',
+        data=json.dumps({"type": "income", "amount": 1000.0, "category": "Salary", "date": "2024-05-01"}),
+        content_type='application/json'
+    )
+    assert response.status_code == 401
+
+
+def test_delete_nonexistent_transaction(client):
+    client.post('/api/register', data=json.dumps({"username": "txuser5", "email": "tx5@example.com", "password": "pwd"}), content_type='application/json')
+    client.post('/api/login', data=json.dumps({"email": "tx5@example.com", "password": "pwd"}), content_type='application/json')
+
+    response = client.delete('/api/transactions/99999')
+    assert response.status_code == 404
+    assert b"Transaction not found" in response.data
+
+
+def test_get_transactions_empty(client):
+    client.post('/api/register', data=json.dumps({"username": "txuser6", "email": "tx6@example.com", "password": "pwd"}), content_type='application/json')
+    client.post('/api/login', data=json.dumps({"email": "tx6@example.com", "password": "pwd"}), content_type='application/json')
+
+    response = client.get('/api/transactions')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data['transactions'] == []
