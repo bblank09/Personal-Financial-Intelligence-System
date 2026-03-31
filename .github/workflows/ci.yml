@@ -11,7 +11,7 @@ on:
 
 jobs:
   backend-tests:
-    name: Backend Tests (Pytest)
+    name: Tests (Pytest)
     runs-on: ubuntu-latest
 
     steps:

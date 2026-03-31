@@ -1,0 +1,13 @@
+.git
+.gitignore
+.gcloudignore
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+local_config.py
+instance/
+tests/
+test_db.py
+.pytest_cache/

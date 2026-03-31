@@ -21,3 +21,6 @@ instance/
 
 # macOS system files
 .DS_Store
+
+/frontend-static
+/local_config.py
