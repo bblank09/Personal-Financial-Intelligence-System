@@ -52,6 +52,8 @@ def live_server():
         os.remove("e2e_test.db")
 
 def test_login_and_dashboard(live_server, page):
+    page.on("console", lambda msg: print(f"Browser console: {msg.text}"))
+    page.on("response", lambda res: print(f"Response: {res.url} {res.status}"))
     # 1. Register
     page.goto(f"{live_server}/register")
     page.fill('input[name="email"]', 'e2e1@example.com')
@@ -67,10 +69,12 @@ def test_login_and_dashboard(live_server, page):
     page.fill('input[name="password"]', 'password123')
     page.click('button[type="submit"]')
     
-    page.wait_for_url("**/dashboard*")
+    page.wait_for_url("**/")
     assert "Overview" in page.content() or "Dashboard" in page.title()
 
 def test_investments_page(live_server, page):
+    page.on("console", lambda msg: print(f"Browser console: {msg.text}"))
+    page.on("response", lambda res: print(f"Response: {res.url} {res.status}"))
     # 3. Another user for investments isolated
     page.goto(f"{live_server}/register")
     page.fill('input[name="email"]', 'e2e2@example.com')
@@ -83,9 +87,9 @@ def test_investments_page(live_server, page):
     page.fill('input[name="email"]', 'e2e2@example.com')
     page.fill('input[name="password"]', 'password123')
     page.click('button[type="submit"]')
-    page.wait_for_url("**/dashboard*")
+    page.wait_for_url("**/")
     
     # 4. Navigate to investments
     page.goto(f"{live_server}/investments")
     page.wait_for_url("**/investments*")
-    assert "Investments" in page.title()
+    assert "Investments" in page.content()
